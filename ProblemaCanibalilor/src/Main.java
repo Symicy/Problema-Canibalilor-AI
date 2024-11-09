@@ -155,7 +155,7 @@ public class Main
     public static void main(String[] args)
     {
         List<List<Stare>> populatie = genereazaPopulatie();
-        // Afisare indivizi(100)
+        // Afisare indivizi(100) si fitness
         for (int i = 0; i < 100; i++)
         {
             System.out.println("Individ " + (i + 1) + ": ");
