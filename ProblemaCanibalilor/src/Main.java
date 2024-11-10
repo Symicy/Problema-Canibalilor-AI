@@ -2,168 +2,70 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-// Stare individ (CS, MS, CB, MB, CD, MD)
-class Stare
-{
-    int CS, MS, CB, MB, CD, MD;
-    boolean pozitieBarca;
-
-    public Stare(int CS, int MS, int CB, int MB, int CD, int MD, boolean pozitieBarca)
-    {
-        this.CS = CS;
-        this.MS = MS;
-        this.CB = CB;
-        this.MB = MB;
-        this.CD = CD;
-        this.MD = MD;
-        this.pozitieBarca = pozitieBarca;
-    }
-
-    // Metoda pentru a verifica daca starea este valida
-    public boolean esteValida()
-    {
-        if (CS > MS && MS > 0)
-            return false;
-        if (CD > MD && MD > 0)
-            return false;
-        return true;
-    }
-    private String afPozitieBarca(boolean pozitieBarca)
-    {
-        if (pozitieBarca) {
-            return "Stanga";
-        } else {
-            return "Dreapta";
-        }
-    }
-    //Afisare stare
-    public void afisareStare()
-    {
-        System.out.println("CS:" + CS + " MS:" + MS + ", CB:" + CB + " MB:" + MB + ", CD:" + CD + " MD:" + MD + " Mal barca:" + afPozitieBarca(pozitieBarca));
-    }
-}
-
 public class Main
 {
-    private static final int NR_MISIONARI = 3;
-    private static final int NR_CANIBALI = 3;
     private static final int NR_INDIVIZI = 100;
-    private static final int MAX_PASI = 50;
-
-    // Mutari posibile: {canibali, misionari}
-    private static final int[][] MUTARI_POSIBILE = {{1, 0}, {0, 1}, {1, 1}, {2, 0}, {0, 2}};
-
-    // Functie generare individ
-    private static List<Stare> genereazaIndivid()
-    {
-        List<Stare> individ = new ArrayList<>();
-        Random random = new Random();
-
-        // Stare initiala
-        Stare stareCurenta = new Stare(NR_CANIBALI, NR_MISIONARI, 0, 0, 0, 0, true);
-        individ.add(stareCurenta);
-
-        for (int i = 1; i < MAX_PASI; i++)
-        {
-            int[] mutare = MUTARI_POSIBILE[random.nextInt(MUTARI_POSIBILE.length)];
-            int canibaliMutati = mutare[0];
-            int misionariMutati = mutare[1];
-
-            // Verificam daca mutarea este valida
-            if (stareCurenta.pozitieBarca)
-            {
-                if (stareCurenta.CS >= canibaliMutati && stareCurenta.MS >= misionariMutati && (canibaliMutati + misionariMutati > 0))
-                {
-                    // Calculam noua stare dupa mutare de pe malul stang catre malul drept
-                    Stare nouaStare = new Stare(
-                            stareCurenta.CS - canibaliMutati,
-                            stareCurenta.MS - misionariMutati,
-                            canibaliMutati,
-                            misionariMutati,
-                            stareCurenta.CD + canibaliMutati,
-                            stareCurenta.MD + misionariMutati,
-                            false
-                    );
-
-                    if (nouaStare.esteValida())
-                    {
-                        individ.add(nouaStare);
-                        stareCurenta = nouaStare;
-                    }
-                }
-            } else
-            {
-                if (stareCurenta.CD >= canibaliMutati && stareCurenta.MD >= misionariMutati && (canibaliMutati + misionariMutati > 0))
-                {
-                    // Calculam noua stare dupa mutare de pe malul drept catre malul stang
-                    Stare nouaStare = new Stare(
-                            stareCurenta.CS + canibaliMutati,
-                            stareCurenta.MS + misionariMutati,
-                            canibaliMutati,
-                            misionariMutati,
-                            stareCurenta.CD - canibaliMutati,
-                            stareCurenta.MD - misionariMutati,
-                            true
-                    );
-
-                    if (nouaStare.esteValida())
-                    {
-                        individ.add(nouaStare);
-                        stareCurenta = nouaStare;
-                    }
-                }
-            }
-        }
-        return individ;
-    }
-
     // Functie pentru a genera o populatie de indivizi
-    private static List<List<Stare>> genereazaPopulatie()
+    private static List<Individ> genereazaPopulatie()
     {
-        List<List<Stare>> populatie = new ArrayList<>();
-        for (int i = 0; i < NR_INDIVIZI; i++) {
-            List<Stare> individ = genereazaIndivid();
+        List<Individ> populatie = new ArrayList<>();
+        for (int i = 0; i < NR_INDIVIZI; i++)
+        {
+            Individ individ = new Individ();
             populatie.add(individ);
         }
         return populatie;
     }
+    //Functie fitness
+    //Acordare puncte pentru fiecare stare valida
+    //Acordare penalizare pentru un nr minim de pasi
+    //Acordare premiu pentru solutia finala
+    //Acordare puncte daca nu se repeta starea
+    private static final int MIN_PASI = 11;  // Numarul minim teoretic de pasi pentru solutie
+    private static final int MAX_PASI = 50;  // Limita maxima permisa de pași
+    private static final double PENALIZARE_STARE_IDENTICA = 0.5;  // Penalizare pentru stari identice consecutive
+    private static final double PENALIZARE_STARE_FINALA_NEVALIDA = 2.0;  // Penalizare pentru stari nevalide
+    private static final double PENALIZARE_PERSOANA_RAMASA=1.0; // Penalizare pentru persoanele ramase pe malul stang
 
-    private static int calculeazaFitness(List<Stare> individ) {
-        int fitness = 0;
-        final int PENALIZARE_STARE_INVALIDA = -1000; // Penalizare mare pentru stări invalide
-        final int PREMII_FINAL_COMPLET = 1000; // Premiu pentru soluția finală
-
-        for (Stare stare : individ) {
-            // Penalizare dacă starea este invalidă
-            if (!stare.esteValida()) {
-                fitness += PENALIZARE_STARE_INVALIDA;
-            }
-
-            // Adaugăm puncte pentru numărul de canibali și misionari de pe malul drept
-            fitness += stare.CD + stare.MD;
+    public static double calculeazaFitness(List<Stare> individ)
+    {
+        int numarPasi = individ.size();
+        double penalizari = 0.0;
+        // Parcurgem fiecare stare si aplicam penalizările
+        for (int i = 0; i < individ.size() - 1; i++)
+        {
+            Stare stareCurenta = individ.get(i);
+            Stare stareUrmatoare = individ.get(i + 1);
+            // Verificam dacă exista doua stari identice consecutive
+            if (stareCurenta.equals(stareUrmatoare))
+                penalizari += PENALIZARE_STARE_IDENTICA;
         }
 
-        // Premiem individul dacă toți canibalii și misionarii au ajuns pe malul drept
-        Stare ultimaStare = individ.get(individ.size() - 1);
-        if (ultimaStare.CD == NR_CANIBALI && ultimaStare.MD == NR_MISIONARI) {
-            fitness += PREMII_FINAL_COMPLET;
+        // Adaugam o penalizare finala dacă ultima stare nu este starea soluției (toti misionarii si canibalii pe malul drept)
+        Stare stareFinala = individ.getLast();
+        if (!(stareFinala.CS == 0 && stareFinala.MS == 0 && stareFinala.CD == 3 && stareFinala.MD == 3))
+        {
+            penalizari += PENALIZARE_STARE_FINALA_NEVALIDA;
+            penalizari += (stareFinala.CS + stareFinala.MS) * PENALIZARE_PERSOANA_RAMASA;
         }
-
-        return fitness;
+        // Calculam fitness ul
+        double fitness = numarPasi + penalizari;
+        return  ((fitness - MIN_PASI) / (MAX_PASI - MIN_PASI))*10;
     }
 
     public static void main(String[] args)
     {
-        List<List<Stare>> populatie = genereazaPopulatie();
+
+        List<Individ> populatie = genereazaPopulatie();
         // Afisare indivizi(100) si fitness
         for (int i = 0; i < 100; i++)
         {
             System.out.println("Individ " + (i + 1) + ": ");
-            List<Stare> individ = populatie.get(i);
-            for (Stare stare : individ)
+            Individ individ = populatie.get(i);
+            for (Stare stare : individ.getIndivid())
                 stare.afisareStare();
-            int fitness = calculeazaFitness(individ);
-            System.out.println("Fitness individ " + (i + 1) + ": " + fitness);
+            double fitness2=calculeazaFitness(individ.getIndivid());
+            System.out.println("Fitness individ " + (i + 1) + ": " + fitness2);
 
             System.out.println();
         }
