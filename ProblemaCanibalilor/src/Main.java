@@ -5,19 +5,8 @@ import java.util.Random;
 public class Main
 {
     private static final int NR_INDIVIZI = 100;
-    // Functie pentru a genera o populatie de indivizi
-    private static List<Individ> genereazaPopulatie()
-    {
-        List<Individ> populatie = new ArrayList<>();
-        for (int i = 0; i < NR_INDIVIZI; i++)
-        {
-            Individ individ = new Individ();
-            populatie.add(individ);
-        }
-        return populatie;
-    }
+
     //Functie fitness
-    //Acordare puncte pentru fiecare stare valida
     //Acordare penalizare pentru un nr minim de pasi
     //Acordare premiu pentru solutia finala
     //Acordare puncte daca nu se repeta starea
@@ -55,8 +44,15 @@ public class Main
 
     public static void main(String[] args)
     {
+        // Generare populatie initiala
+        List<Individ> populatie = new ArrayList<>();
+        for (int i = 0; i < NR_INDIVIZI; i++)
+        {
+            Individ individ = new Individ();
+            individ.setFitness(calculeazaFitness(individ.getIndivid()));
+            populatie.add(individ);
+        }
 
-        List<Individ> populatie = genereazaPopulatie();
         // Afisare indivizi(100) si fitness
         for (int i = 0; i < 100; i++)
         {
@@ -64,8 +60,7 @@ public class Main
             Individ individ = populatie.get(i);
             for (Stare stare : individ.getIndivid())
                 stare.afisareStare();
-            double fitness2=calculeazaFitness(individ.getIndivid());
-            System.out.println("Fitness individ " + (i + 1) + ": " + fitness2);
+            System.out.println("Fitness: " + individ.getFitness());
 
             System.out.println();
         }

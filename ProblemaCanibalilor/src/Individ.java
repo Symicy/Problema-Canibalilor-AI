@@ -12,10 +12,12 @@ class Individ
     private static final int[][] MUTARI_POSIBILE = {{1, 0}, {0, 1}, {1, 1}, {2, 0}, {0, 2}};
 
     private List<Stare> individ = new ArrayList<>();
+    private double fitness;
 
     public Individ()
     {
         this.individ = genereazaIndivid();
+        this.fitness = 0;
     }
 
     private List<Stare> genereazaIndivid()
@@ -92,5 +94,13 @@ class Individ
     public int getNrCanibali()
     {
         return NR_CANIBALI;
+    }
+    public double getFitness()
+    {
+        return fitness;
+    }
+    public void setFitness(double fitness)
+    {
+        this.fitness = fitness;
     }
 }
