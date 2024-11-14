@@ -5,7 +5,6 @@ import java.util.Random;
 public class Main
 {
     private static final int NR_INDIVIZI = 100;
-
     //Functie fitness
     //Acordare penalizare pentru un nr minim de pasi
     //Acordare premiu pentru solutia finala
@@ -52,7 +51,6 @@ public class Main
             individ.setFitness(calculeazaFitness(individ.getIndivid()));
             populatie.add(individ);
         }
-
         // Afisare indivizi(100) si fitness
         for (int i = 0; i < 100; i++)
         {
@@ -61,7 +59,6 @@ public class Main
             for (Stare stare : individ.getIndivid())
                 stare.afisareStare();
             System.out.println("Fitness: " + individ.getFitness());
-
             System.out.println();
         }
     }
