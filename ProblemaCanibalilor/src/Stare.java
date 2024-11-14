@@ -35,6 +35,7 @@ class Stare
     //Afisare stare
     public void afisareStare()
     {
-        System.out.println("(CS:" + CS + " MS:" + MS + ") - (CB:" + CB + " MB:" + MB + ") - (CD:" + CD + " MD:" + MD + ") - Mal barca:" + afPozitieBarca(pozitieBarca));
+        System.out.print("(CB:" + CB + " MB:" + MB + "), ");
+        //System.out.print("{(" + CS + ":" + MS + ") - (" + CB + ":" + MB + ") - (" + CD + ":" + MD + ")}, ");
     }
 }
