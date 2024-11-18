@@ -1,65 +1,175 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Main
 {
     private static final int NR_INDIVIZI = 100;
+    private static final int NR_MISIONARI = 3;
+    private static final int NR_CANIBALI = 3;
+    private static final int PUNCTE_MAX = 1;
+    private static final int PUNCTE_MIN = 0;
     //Functie fitness
-    //Acordare penalizare pentru un nr minim de pasi
     //Acordare premiu pentru solutia finala
     //Acordare puncte daca nu se repeta starea
-    private static final int MIN_PASI = 11;  // Numarul minim teoretic de pasi pentru solutie
-    private static final int MAX_PASI = 50;  // Limita maxima permisa de pași
-    private static final double PENALIZARE_STARE_IDENTICA = 0.5;  // Penalizare pentru stari identice consecutive
-    private static final double PENALIZARE_STARE_FINALA_NEVALIDA = 2.0;  // Penalizare pentru stari nevalide
-    private static final double PENALIZARE_PERSOANA_RAMASA=1.0; // Penalizare pentru persoanele ramase pe malul stang
+    private static final double PUNCTE_STARI_DIFERITE = 0.25;
+    private static final double PUNCTE_STARI_IDENTICE = -0.25;
+    private static final double PUNCTE_MISIONARI_MANCATI = -0.5;
+    private static final double PUNCTE_MUTARE_IMPOSIBILA = -1.0;
+    private static final double PUNCTE_MUTARE_POSIBILA = 0.2;
+    private static final double PUNCTE_PERSOANA_MUTATA = 0.1;
 
-    public static double calculeazaFitness(List<Stare> individ)
+    public static void calculeazaFitness(Individ individ)
     {
-        int numarPasi = individ.size();
-        double penalizari = 0.0;
-        // Parcurgem fiecare stare si aplicam penalizările
-        for (int i = 0; i < individ.size() - 1; i++)
+        int nrMisionariStanga = NR_MISIONARI;
+        int nrCanibaliStanga = NR_CANIBALI;
+        int nrMisionariDreapta = 0;
+        int nrCanibaliDreapta = 0;
+        boolean barcaStanga = true; // Barca începe pe malul stâng
+        double puncte = 0;
+
+        int canibaliMutatiAnterior = 0;
+        int misionariMutatiAnterior = 0;
+
+        for (Stare stare : individ.getIndivid())
         {
-            Stare stareCurenta = individ.get(i);
-            Stare stareUrmatoare = individ.get(i + 1);
-            // Verificam dacă exista doua stari identice consecutive
-            if (stareCurenta.equals(stareUrmatoare))
-                penalizari += PENALIZARE_STARE_IDENTICA;
+            int canibaliMutati = stare.getCB();
+            int misionariMutati = stare.getMB();
+
+            // Actualizare stări bazate pe direcția bărcii
+            if (barcaStanga)
+            {
+                if (canibaliMutati > nrCanibaliStanga || misionariMutati > nrMisionariStanga)
+                {
+                    puncte += PUNCTE_MUTARE_IMPOSIBILA;
+                }
+                else
+                {
+                    puncte += PUNCTE_MUTARE_POSIBILA;
+                }
+                if(canibaliMutati==canibaliMutatiAnterior && misionariMutati==misionariMutatiAnterior)
+                {
+                    puncte += PUNCTE_STARI_IDENTICE;
+                }
+                else
+                {
+                    puncte += PUNCTE_STARI_DIFERITE;
+                }
+                if (canibaliMutati+nrMisionariDreapta>misionariMutati+nrCanibaliDreapta)
+                {
+                    puncte += PUNCTE_MISIONARI_MANCATI;
+                }
+                canibaliMutatiAnterior=canibaliMutati;
+                misionariMutatiAnterior=misionariMutati;
+
+                nrCanibaliStanga -= canibaliMutati;
+                nrMisionariStanga -= misionariMutati;
+                nrCanibaliDreapta += canibaliMutati;
+                nrMisionariDreapta += misionariMutati;
+            }
+            else
+            {
+                if (canibaliMutati > nrCanibaliDreapta || misionariMutati > nrMisionariDreapta)
+                {
+                    puncte += PUNCTE_MUTARE_IMPOSIBILA;
+                }
+                else
+                {
+                    puncte += PUNCTE_MUTARE_POSIBILA;
+                }
+                if(canibaliMutati==canibaliMutatiAnterior && misionariMutati==misionariMutatiAnterior)
+                {
+                    puncte += PUNCTE_STARI_IDENTICE;
+                }
+                else
+                {
+                    puncte += PUNCTE_STARI_DIFERITE;
+                }
+                if (canibaliMutati+nrMisionariStanga>misionariMutati+nrCanibaliStanga)
+                {
+                    puncte += PUNCTE_MISIONARI_MANCATI;
+                }
+                canibaliMutatiAnterior=canibaliMutati;
+                misionariMutatiAnterior=misionariMutati;
+
+                nrCanibaliDreapta -= canibaliMutati;
+                nrMisionariDreapta -= misionariMutati;
+                nrCanibaliStanga += canibaliMutati;
+                nrMisionariStanga += misionariMutati;
+            }
+            // Barca își schimbă poziția
+            barcaStanga = !barcaStanga;
         }
 
-        // Adaugam o penalizare finala dacă ultima stare nu este starea soluției (toti misionarii si canibalii pe malul drept)
-        Stare stareFinala = individ.getLast();
-        if (!(stareFinala.CS == 0 && stareFinala.MS == 0 && stareFinala.CD == 3 && stareFinala.MD == 3))
+//        // Verificare dacă jocul este complet
+//        if (nrMisionariStanga == 0 && nrCanibaliStanga == 0 && nrMisionariDreapta == NR_MISIONARI && nrCanibaliDreapta == NR_CANIBALI)
+//        {
+//            individ.setFitness(1.0); // Solutie gasita
+//            return;
+//        }
+        //
+        puncte += PUNCTE_PERSOANA_MUTATA*(nrMisionariDreapta+nrCanibaliDreapta);
+        // Calculul fitness-ului pentru un joc incomplet
+        double fitness= PUNCTE_MIN + (PUNCTE_MAX - PUNCTE_MIN) * ((puncte - PUNCTE_MIN) / (PUNCTE_MISIONARI_MANCATI - PUNCTE_MIN));
+        individ.setFitness(fitness);
+    }
+
+    public static List<Individ> combinare_populatii(List<Individ> populatie1, List<Individ> populatie2)
+    {
+        List<Individ> populatie_combinata = new ArrayList<>();
+        for(int i=0;i<(int)(populatie1.size()*0.2);i++)
         {
-            penalizari += PENALIZARE_STARE_FINALA_NEVALIDA;
-            penalizari += (stareFinala.CS + stareFinala.MS) * PENALIZARE_PERSOANA_RAMASA;
+            populatie_combinata.add(populatie1.get(i));
         }
-        // Calculam fitness ul
-        double fitness = numarPasi + penalizari;
-        return  ((fitness - MIN_PASI) / (MAX_PASI - MIN_PASI))*10;
+        for(int i=0;i<(int)(populatie2.size()*0.8);i++)
+        {
+            populatie_combinata.add(populatie2.get(i));
+        }
+        return populatie_combinata;
     }
 
     public static void main(String[] args)
     {
+        List<Individ>top_indivizi=new ArrayList<>();
         // Generare populatie initiala
         List<Individ> populatie = new ArrayList<>();
         for (int i = 0; i < NR_INDIVIZI; i++)
         {
             Individ individ = new Individ();
-            individ.setFitness(calculeazaFitness(individ.getIndivid()));
+            individ.setIndivid(Individ.genereazaIndivid());
+            calculeazaFitness(individ);
             populatie.add(individ);
         }
-        // Afisare indivizi(100) si fitness
+        populatie.sort((individ1, individ2) -> Double.compare(individ2.getFitness(), individ1.getFitness()));
+        top_indivizi.add(populatie.getFirst());
+
+        //100 de generatii
         for (int i = 0; i < 100; i++)
         {
-            System.out.println("Individ " + (i + 1) + ": ");
-            Individ individ = populatie.get(i);
-            for (Stare stare : individ.getIndivid())
+            List<Individ> nouaPopulatie = new ArrayList<>();
+            for (int j = 0; j < NR_INDIVIZI; j++)
+            {
+                Individ parinte1 = Operatori.selectieTurnir(populatie,5);
+                Individ parinte2 = Operatori.selectieTurnir(populatie,5);
+                Individ copil = Operatori.incrucisare(parinte1, parinte2);
+                Operatori.mutatie(copil);
+                calculeazaFitness(copil);
+                nouaPopulatie.add(copil);
+            }
+            populatie = nouaPopulatie;
+            //populatie=combinare_populatii(populatie,nouaPopulatie);
+
+            populatie.sort((individ1, individ2) -> Double.compare(individ2.getFitness(), individ1.getFitness()));
+            top_indivizi.add(populatie.getFirst());
+        }
+        top_indivizi.sort((individ1, individ2) -> Double.compare(individ2.getFitness(), individ1.getFitness()));
+        for(int i=0;i<10;i++)
+        {
+            System.out.println("Top Individ:"+i);
+            for(Stare stare : top_indivizi.get(i).getIndivid())
+            {
                 stare.afisareStare();
-            System.out.println("Fitness: " + individ.getFitness());
-            System.out.println();
+            }
+            System.out.println("\nFitness: " + top_indivizi.get(i).getFitness());
         }
     }
 }
