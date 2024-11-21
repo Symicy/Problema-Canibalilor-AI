@@ -1,5 +1,5 @@
-// Stare individ (CS, MS, CB, MB, CD, MD)
-class Stare
+
+public class Stare
 {
     int CB, MB;
     public Stare(int CB, int MB)
