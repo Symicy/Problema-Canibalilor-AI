@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-class Individ
+public class Individ
 {
     private static final int NR_MISIONARI = 3;
     private static final int NR_CANIBALI = 3;
@@ -11,7 +11,7 @@ class Individ
     // Mutari posibile: {canibali, misionari}
     private static final int[][] MUTARI_POSIBILE = {{1, 0}, {0, 1}, {1, 1}, {2, 0}, {0, 2}};
 
-    private List<Stare> individ = new ArrayList<>();
+    private List<Stare> individ;
     private double fitness;
 
     public Individ()
@@ -56,5 +56,13 @@ class Individ
     public void setFitness(double fitness)
     {
         this.fitness = fitness;
+    }
+    public void afisareIndivid()
+    {
+        for (Stare stare : individ)
+        {
+            stare.afisareStare();
+        }
+        System.out.println();
     }
 }
