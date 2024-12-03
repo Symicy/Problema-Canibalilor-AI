@@ -7,7 +7,7 @@ public class Individ
     private static final int NR_MISIONARI = 3;
     private static final int NR_CANIBALI = 3;
     private static final int MAX_PASI = 11;
-
+    private static final Random random = new Random();
     // Mutari posibile: {canibali, misionari}
     private static final int[][] MUTARI_POSIBILE = {{1, 0}, {0, 1}, {1, 1}, {2, 0}, {0, 2}};
 
@@ -23,8 +23,6 @@ public class Individ
     public static List<Stare> genereazaIndivid()
     {
         List<Stare> individ = new ArrayList<>();
-        Random random = new Random();
-
         for (int i = 0; i < MAX_PASI; i++)
         {
             int[] mutare = MUTARI_POSIBILE[random.nextInt(MUTARI_POSIBILE.length)];

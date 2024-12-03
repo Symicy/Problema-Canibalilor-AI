@@ -6,10 +6,9 @@ import java.util.Random;
 public class Operatori
 {
     private static final int[][] MUTARI_POSIBILE = {{1, 0}, {0, 1}, {1, 1}, {2, 0}, {0, 2}};
-
+    private static final Random random = new Random();
     public static Individ selectieTurnir(List<Individ> populatie, int k)
     {
-        Random random = new Random();
         // Alegem un subset de k indivizi
         List<Individ> turnir = new ArrayList<>();
         for (int i = 0; i < k; i++)
@@ -26,7 +25,6 @@ public class Operatori
     public static List<Individ> incrucisare(Individ parinte1, Individ parinte2)
     {
         // Incrucisarea a doi parinti
-        Random random = new Random();
         List<Stare> copilIndivid1 = new ArrayList<>();
         List<Stare> copilIndivid2 = new ArrayList<>();
         Individ copil1 = new Individ();
@@ -53,7 +51,6 @@ public class Operatori
     public static void mutatie(Individ individ, int sansaMutatie)
     {
         // Mutatie a unui individ
-        Random random = new Random();
         int sansa = random.nextInt(100);
         if (sansa <= sansaMutatie)
         {
