@@ -54,7 +54,7 @@ public class Operatori
         int sansa = random.nextInt(100);
         if (sansa <= sansaMutatie)
         {
-            int pozitieMutatie = random.nextInt(individ.getIndivid().size());
+            int pozitieMutatie = random.nextInt(individ.getIndivid().size()-1);
             int[] mutare = MUTARI_POSIBILE[random.nextInt(MUTARI_POSIBILE.length)];
             individ.getIndivid().set(pozitieMutatie, new Stare(mutare[0], mutare[1]));
         }
