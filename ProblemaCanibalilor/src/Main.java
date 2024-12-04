@@ -106,6 +106,9 @@ public class Main
 
     public static void main(String[] args)
     {
+        List<Double> fitnessuri=new ArrayList<>();
+        double medie_fitness=0;
+
         List<Individ>top_indivizi=new ArrayList<>();
         // Generare populatie initiala
         List<Individ> populatie = new ArrayList<>();
@@ -115,18 +118,26 @@ public class Main
             individ.setIndivid(Individ.genereazaIndivid());
             calculeazaFitness(individ);
             populatie.add(individ);
+
+            medie_fitness+=individ.getFitness();
         }
+
+        medie_fitness/=NR_INDIVIZI;
+        fitnessuri.add(medie_fitness);
+
         populatie.sort((individ1, individ2) -> Double.compare(individ2.getFitness(), individ1.getFitness()));
         top_indivizi.add(populatie.getFirst());
 
         //100 de generatii
         for (int i = 0; i < 100; i++)
         {
+            medie_fitness=0;
+
             List<Individ> nouaPopulatie = new ArrayList<>();
-            for (int j = 0; j < NR_INDIVIZI; j++)
+            for (int j = 0; j < NR_INDIVIZI/2; j++)
             {
-                Individ parinte1 = Operatori.selectieTurnir(populatie,5);
-                Individ parinte2 = Operatori.selectieTurnir(populatie,5);
+                Individ parinte1 = Operatori.selectieTurnir(populatie,4);
+                Individ parinte2 = Operatori.selectieTurnir(populatie,4);
                 List<Individ> copii = Operatori.incrucisare(parinte1, parinte2);
                 Individ copil1 = copii.get(0);
                 Individ copil2 = copii.get(1);
@@ -136,17 +147,28 @@ public class Main
                 calculeazaFitness(copil2);
                 nouaPopulatie.add(copil1);
                 nouaPopulatie.add(copil2);
+
+                medie_fitness+=copil1.getFitness();
+                medie_fitness+=copil2.getFitness();
             }
+            medie_fitness/=NR_INDIVIZI;
+            fitnessuri.add(medie_fitness);
+
+            nouaPopulatie.sort((individ1, individ2) -> Double.compare(individ2.getFitness(), individ1.getFitness()));
+            top_indivizi.add(nouaPopulatie.getFirst());
             populatie = nouaPopulatie;
-            populatie.sort((individ1, individ2) -> Double.compare(individ2.getFitness(), individ1.getFitness()));
-            top_indivizi.add(populatie.getFirst());
         }
-        //top_indivizi.sort((individ1, individ2) -> Double.compare(individ2.getFitness(), individ1.getFitness()));
         for(int i=0;i<100;i++)
         {
             System.out.println("Top Individ:"+i);
             top_indivizi.get(i).afisareIndivid();
             System.out.println("Fitness: " + top_indivizi.get(i).getFitness());
+        }
+
+        for(int i=0;i<100;i++)
+        {
+            System.out.println("Generatia: "+i);
+            System.out.println("Medie fitness: "+fitnessuri.get(i));
         }
     }
 }
