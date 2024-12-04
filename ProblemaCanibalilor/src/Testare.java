@@ -78,5 +78,103 @@ public class Testare {
                 assertEquals(stare1, copii.get(1).getIndivid().get(i));
             }
         }
+
+    }
+    @Test
+    void mutatieSchimbaIndivid() {
+        Individ individ = new Individ();
+        Individ individCopie = new Individ();
+        List<Stare> stari1 = new ArrayList<>();
+        for (int i = 0; i <MAX_PASI; i++)
+        {
+            int[] mutare = MUTARI_POSIBILE[random.nextInt(MUTARI_POSIBILE.length)];
+            stari1.add(new Stare(mutare[0], mutare[1]));
+        }
+        List<Stare> stari2 = new ArrayList<>(stari1);
+        individ.setIndivid(stari1);
+        individCopie.setIndivid(stari2);
+        Operatori.mutatie(individ, 100);
+        int schimbari = 0;
+        for (int i = 0; i < individ.getIndivid().size(); i++) {
+            if (!individ.getIndivid().get(i).equals(individCopie.getIndivid().get(i))) {
+                schimbari++;
+            }
+        }
+        assertEquals(1, schimbari);
+    }
+    @Test
+    void mutatieNuSchimbaIndividul() {
+        Individ individ = new Individ();
+        Individ individCopie = new Individ();
+        List<Stare> stari = new ArrayList<>();
+        for (int i = 0; i < MAX_PASI; i++) {
+            int[] mutare = MUTARI_POSIBILE[random.nextInt(MUTARI_POSIBILE.length)];
+            stari.add(new Stare(mutare[0], mutare[1]));
+        }
+        individ.setIndivid(stari);
+        individCopie.setIndivid(stari);
+        Operatori.mutatie(individ, 0);
+        int schimbari = 0;
+        for (int i = 0; i < individ.getIndivid().size(); i++) {
+            if (!individ.getIndivid().get(i).equals(individCopie.getIndivid().get(i))) {
+                schimbari++;
+            }
+        }
+        assertEquals(0, schimbari);
+    }
+
+    @Test
+    void calculeazaFitnessMiscareInvalidaFitnessNegativ() {
+        Individ individ = new Individ();
+        List<Stare> stari = new ArrayList<>();
+        stari.add(new Stare(1, 0));
+        stari.add(new Stare(2, 0));
+        individ.setIndivid(stari);
+        Main.calculeazaFitness(individ);
+        assertTrue(individ.getFitness() <= 0, "Fitness ul ar trebui sa fie negativ pentru o mutare invalida");
+    }
+
+    @Test
+    void calculeazaFitnessStariIdenticePenalizareAplicata() {
+        Individ individ = new Individ();
+        List<Stare> stari = new ArrayList<>();
+        stari.add(new Stare(1, 1));
+        stari.add(new Stare(1, 1)); // Identical state
+        individ.setIndivid(stari);
+        Main.calculeazaFitness(individ);
+        assertTrue(individ.getFitness() <= 0, "Fitness-ul ar trebuia sa fie negativ pentru stari identice");
+    }
+
+    @Test
+    void calculeazaFitnessMisionarMancatPenalitateAplicata() {
+        Individ individ = new Individ();
+        List<Stare> stari = new ArrayList<>();
+        stari.add(new Stare(0, 2));
+        individ.setIndivid(stari);
+        Main.calculeazaFitness(individ);
+        assertTrue(individ.getFitness() <= 0, "Fitness-ul ar trebui sa fie negativ cand misionarii sunt mancati");
+    }
+    @Test
+    void calculeazaFitnessMiscariValide() {
+        Individ individ = new Individ();
+        List<Stare> stari = new ArrayList<>();
+
+        // Solutie valida pentru problema misionarilor si canibalilor
+        stari.add(new Stare(1, 1)); // Muta 1 misionar si 1 canibal pe malul drept
+        stari.add(new Stare(0, 1)); // Muta 1 canibal inapoi
+        stari.add(new Stare(2, 0)); // Muta 2 misionari pe malul drept
+        stari.add(new Stare(0, 1)); // Muta 1 misionar inapoi
+        stari.add(new Stare(0, 2)); // Muta 2 canibali pe malul drept
+        stari.add(new Stare(0, 1)); // Muta 1 canibal inapoi
+        stari.add(new Stare(1, 1)); // Muta 1 misionar si 1 canibal pe malul drept
+        stari.add(new Stare(0, 1)); // Muta 1 canibal inapoi
+        stari.add(new Stare(0, 2)); // Muta 2 canibali pe malul drept
+
+        individ.setIndivid(stari);
+        Main.calculeazaFitness(individ);
+
+        // Verificam dacă fitness-ul este pozitiv (mutari valide)
+        assertTrue(individ.getFitness() >= 0, "Fitness-ul trebuie sa fie pozitiv pentru mutari valide.");
     }
 }
+
