@@ -12,10 +12,11 @@ public class Main
     //Functie fitness
     private static final double PUNCTE_STARI_DIFERITE = 0.25;
     private static final double PUNCTE_STARI_IDENTICE = -0.25;
-    private static final double PUNCTE_MISIONARI_MANCATI = -0.75;
+    private static final double PUNCTE_MISIONARI_MANCATI = -1.25;
     private static final double PUNCTE_MUTARE_IMPOSIBILA = -1.0;
     private static final double PUNCTE_MUTARE_POSIBILA = 0.2;
     private static final double PUNCTE_PERSOANA_MUTATA = 0.3;
+    private static final double PUNCTE_SOLUTIE = 100.0;
 
     public static void calculeazaFitness(Individ individ)
     {
@@ -23,7 +24,7 @@ public class Main
         int nrCanibaliStanga = NR_CANIBALI;
         int nrMisionariDreapta = 0;
         int nrCanibaliDreapta = 0;
-        boolean barcaStanga = true; // Barca începe pe malul stâng
+        boolean barcaStanga = true; // Barca incepe pe malul stang
         double fitness = 0;
 
         int canibaliMutatiAnterior = 0;
@@ -34,7 +35,7 @@ public class Main
             int canibaliMutati = stare.getCB();
             int misionariMutati = stare.getMB();
 
-            // Actualizare stări bazate pe direcția bărcii
+            // Actualizare stari bazate pe directia barcii
             if (barcaStanga)
             {
                 if (canibaliMutati > nrCanibaliStanga || misionariMutati > nrMisionariStanga)
@@ -98,6 +99,7 @@ public class Main
             // Barca își schimbă poziția
             barcaStanga = !barcaStanga;
         }
+
         fitness += PUNCTE_PERSOANA_MUTATA*(nrMisionariDreapta+nrCanibaliDreapta);
         //fitness=pow(fitness,2);
         individ.setFitness(fitness);
@@ -156,8 +158,28 @@ public class Main
 
             nouaPopulatie.sort((individ1, individ2) -> Double.compare(individ2.getFitness(), individ1.getFitness()));
             top_indivizi.add(nouaPopulatie.getFirst());
+
+            if(i%9==0)
+            {
+                //inlocuire ultimiii 20% din indivizi cu altii generati random
+                for(int k=0;k<NR_INDIVIZI/5;k++)
+                {
+                    Individ individ = new Individ();
+                    individ.setIndivid(Individ.genereazaIndivid());
+                    calculeazaFitness(individ);
+                    nouaPopulatie.set(NR_INDIVIZI-k-1,individ);
+                }
+            }
             populatie = nouaPopulatie;
         }
+
+        //afisare populatie finala
+//        for (Individ individ : populatie)
+//        {
+//            individ.afisareIndivid();
+//            System.out.println("Fitness: " + individ.getFitness());
+//        }
+
         for(int i=0;i<100;i++)
         {
             System.out.println("Top Individ:"+i);
@@ -165,10 +187,10 @@ public class Main
             System.out.println("Fitness: " + top_indivizi.get(i).getFitness());
         }
 
-        for(int i=0;i<100;i++)
-        {
-            System.out.println("Generatia: "+i);
-            System.out.println("Medie fitness: "+fitnessuri.get(i));
-        }
+//        for(int i=0;i<100;i++)
+//        {
+//            System.out.println("Generatia: "+i);
+//            System.out.println("Medie fitness: "+fitnessuri.get(i));
+//        }
     }
 }
