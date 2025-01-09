@@ -12,8 +12,7 @@ public class Operatori
     {
         // Alegem un subset de k indivizi
         List<Individ> turnir = new ArrayList<>();
-        for (int i = 0; i < k; i++)
-        {
+        for (int i = 0; i < k; i++) {
             int indexAleator = random.nextInt(populatie.size());
             turnir.add(populatie.get(indexAleator));
         }
@@ -23,23 +22,18 @@ public class Operatori
         return celMaiBun;
     }
 
-    public static List<Individ> incrucisare(Individ parinte1, Individ parinte2)
-    {
+    public static List<Individ> incrucisare(Individ parinte1, Individ parinte2) {
         // Incrucisarea a doi parinti
         List<Stare> copilIndivid1 = new ArrayList<>();
         List<Stare> copilIndivid2 = new ArrayList<>();
         Individ copil1 = new Individ();
         Individ copil2 = new Individ();
         int punctIncrucisare = random.nextInt(parinte1.getIndivid().size()-1);
-        for (int i = 0; i < parinte1.getIndivid().size(); i++)
-        {
-            if (i < punctIncrucisare)
-            {
+        for (int i = 0; i < parinte1.getIndivid().size(); i++) {
+            if (i < punctIncrucisare) {
                 copilIndivid1.add(parinte1.getIndivid().get(i));
                 copilIndivid2.add(parinte2.getIndivid().get(i));
-            }
-            else
-            {
+            } else {
                 copilIndivid1.add(parinte2.getIndivid().get(i));
                 copilIndivid2.add(parinte1.getIndivid().get(i));
             }
@@ -49,8 +43,7 @@ public class Operatori
         return List.of(copil1, copil2);
     }
 
-    public static List<Individ> incrucisare2Puncte(Individ individ1, Individ individ2)
-    {
+    public static List<Individ> incrucisare2Puncte(Individ individ1, Individ individ2) {
         // Incrucisarea a doi parinti
         List<Stare> copilIndivid1 = new ArrayList<>();
         List<Stare> copilIndivid2 = new ArrayList<>();
@@ -58,15 +51,12 @@ public class Operatori
         Individ copil2 = new Individ();
         int punctIncrucisare1 = random.nextInt(individ1.getIndivid().size() - 1);
         int punctIncrucisare2 = punctIncrucisare1 + random.nextInt(individ1.getIndivid().size() - punctIncrucisare1);
-        for (int i = 0; i < individ1.getIndivid().size(); i++)
-        {
-            if (i < punctIncrucisare1 || i >= punctIncrucisare2)
-            {
+        for (int i = 0; i < individ1.getIndivid().size(); i++) {
+            if (i < punctIncrucisare1 || i >= punctIncrucisare2) {
                 copilIndivid1.add(individ1.getIndivid().get(i));
                 copilIndivid2.add(individ2.getIndivid().get(i));
             }
-            else
-            {
+            else {
                 copilIndivid1.add(individ2.getIndivid().get(i));
                 copilIndivid2.add(individ1.getIndivid().get(i));
             }
@@ -76,12 +66,10 @@ public class Operatori
         return List.of(copil1, copil2);
     }
 
-    public static void mutatie(Individ individ, int sansaMutatie)
-    {
+    public static void mutatie(Individ individ, int sansaMutatie) {
         // Mutatie a unui individ
         int sansa = random.nextInt(100);
-        if (sansa <= sansaMutatie)
-        {
+        if (sansa <= sansaMutatie) {
             int pozitieMutatie = random.nextInt(individ.getIndivid().size()-1);
             int[] mutare = MUTARI_POSIBILE[random.nextInt(MUTARI_POSIBILE.length)];
             while (individ.getIndivid().get(pozitieMutatie).getCB() == mutare[0] && individ.getIndivid().get(pozitieMutatie).getMB() == mutare[1])

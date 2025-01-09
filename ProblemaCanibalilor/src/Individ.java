@@ -14,17 +14,14 @@ public class Individ
     private List<Stare> individ;
     private double fitness;
 
-    public Individ()
-    {
+    public Individ() {
         this.individ = null;
         this.fitness = 0;
     }
 
-    public static List<Stare> genereazaIndivid()
-    {
+    public static List<Stare> genereazaIndivid() {
         List<Stare> individ = new ArrayList<>();
-        for (int i = 0; i < MAX_PASI; i++)
-        {
+        for (int i = 0; i < MAX_PASI; i++) {
             int[] mutare = MUTARI_POSIBILE[random.nextInt(MUTARI_POSIBILE.length)];
             individ.add(new Stare(mutare[0], mutare[1]));
         }
@@ -55,10 +52,8 @@ public class Individ
     {
         this.fitness = fitness;
     }
-    public void afisareIndivid()
-    {
-        for (Stare stare : individ)
-        {
+    public void afisareIndivid() {
+        for (Stare stare : individ) {
             stare.afisareStare();
         }
         System.out.println();

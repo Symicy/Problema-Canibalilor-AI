@@ -4,9 +4,9 @@ import java.util.Random;
 
 import static java.lang.Math.pow;
 
-public class Main
-{
+public class Main {
     private static final int NR_INDIVIZI = 100;
+    private static final int NR_GENERATII = 100;
     private static final int NR_MISIONARI = 3;
     private static final int NR_CANIBALI = 3;
     //Functie fitness
@@ -16,10 +16,8 @@ public class Main
     private static final double PUNCTE_MUTARE_IMPOSIBILA = -1.0;
     private static final double PUNCTE_MUTARE_POSIBILA = 0.2;
     private static final double PUNCTE_PERSOANA_MUTATA = 0.3;
-    private static final double PUNCTE_SOLUTIE = 100.0;
 
-    public static void calculeazaFitness(Individ individ)
-    {
+    public static void calculeazaFitness(Individ individ) {
         int nrMisionariStanga = NR_MISIONARI;
         int nrCanibaliStanga = NR_CANIBALI;
         int nrMisionariDreapta = 0;
@@ -30,32 +28,24 @@ public class Main
         int canibaliMutatiAnterior = 0;
         int misionariMutatiAnterior = 0;
 
-        for (Stare stare : individ.getIndivid())
-        {
+        for (Stare stare : individ.getIndivid()) {
             int canibaliMutati = stare.getCB();
             int misionariMutati = stare.getMB();
-
             // Actualizare stari bazate pe directia barcii
-            if (barcaStanga)
-            {
-                if (canibaliMutati > nrCanibaliStanga || misionariMutati > nrMisionariStanga)
-                {
+            if (barcaStanga) {
+                if (canibaliMutati > nrCanibaliStanga || misionariMutati > nrMisionariStanga) {
                     fitness += PUNCTE_MUTARE_IMPOSIBILA;
                 }
-                else
-                {
+                else {
                     fitness += PUNCTE_MUTARE_POSIBILA;
                 }
-                if(canibaliMutati==canibaliMutatiAnterior && misionariMutati==misionariMutatiAnterior)
-                {
+                if(canibaliMutati==canibaliMutatiAnterior && misionariMutati==misionariMutatiAnterior) {
                     fitness += PUNCTE_STARI_IDENTICE;
                 }
-                else
-                {
+                else {
                     fitness += PUNCTE_STARI_DIFERITE;
                 }
-                if (canibaliMutati+nrMisionariDreapta>misionariMutati+nrCanibaliDreapta)
-                {
+                if (canibaliMutati+nrMisionariDreapta>misionariMutati+nrCanibaliDreapta) {
                     fitness += PUNCTE_MISIONARI_MANCATI;
                 }
                 canibaliMutatiAnterior=canibaliMutati;
@@ -65,27 +55,20 @@ public class Main
                 nrMisionariStanga -= misionariMutati;
                 nrCanibaliDreapta += canibaliMutati;
                 nrMisionariDreapta += misionariMutati;
-            }
-            else
-            {
-                if (canibaliMutati > nrCanibaliDreapta || misionariMutati > nrMisionariDreapta)
-                {
+            } else {
+                if (canibaliMutati > nrCanibaliDreapta || misionariMutati > nrMisionariDreapta) {
                     fitness += PUNCTE_MUTARE_IMPOSIBILA;
                 }
-                else
-                {
+                else {
                     fitness += PUNCTE_MUTARE_POSIBILA;
                 }
-                if(canibaliMutati==canibaliMutatiAnterior && misionariMutati==misionariMutatiAnterior)
-                {
+                if(canibaliMutati==canibaliMutatiAnterior && misionariMutati==misionariMutatiAnterior) {
                     fitness += PUNCTE_STARI_IDENTICE;
                 }
-                else
-                {
+                else {
                     fitness += PUNCTE_STARI_DIFERITE;
                 }
-                if (canibaliMutati+nrMisionariStanga>misionariMutati+nrCanibaliStanga)
-                {
+                if (canibaliMutati+nrMisionariStanga>misionariMutati+nrCanibaliStanga) {
                     fitness += PUNCTE_MISIONARI_MANCATI;
                 }
                 canibaliMutatiAnterior=canibaliMutati;
@@ -99,12 +82,9 @@ public class Main
             // Barca își schimbă poziția
             barcaStanga = !barcaStanga;
         }
-
         fitness += PUNCTE_PERSOANA_MUTATA*(nrMisionariDreapta+nrCanibaliDreapta);
-        //fitness=pow(fitness,2);
         individ.setFitness(fitness);
     }
-
 
     public static void main(String[] args)
     {
@@ -114,8 +94,7 @@ public class Main
         List<Individ>top_indivizi=new ArrayList<>();
         // Generare populatie initiala
         List<Individ> populatie = new ArrayList<>();
-        for (int i = 0; i < NR_INDIVIZI; i++)
-        {
+        for (int i = 0; i < NR_INDIVIZI; i++) {
             Individ individ = new Individ();
             individ.setIndivid(Individ.genereazaIndivid());
             calculeazaFitness(individ);
@@ -131,13 +110,11 @@ public class Main
         top_indivizi.add(populatie.getFirst());
 
         //100 de generatii
-        for (int i = 0; i < 100; i++)
-        {
+        for (int i = 0; i < NR_GENERATII; i++) {
             medie_fitness=0;
 
             List<Individ> nouaPopulatie = new ArrayList<>();
-            for (int j = 0; j < NR_INDIVIZI/2; j++)
-            {
+            for (int j = 0; j < NR_INDIVIZI/2; j++) {
                 Individ parinte1 = Operatori.selectieTurnir(populatie,4);
                 Individ parinte2 = Operatori.selectieTurnir(populatie,4);
                 List<Individ> copii = Operatori.incrucisare(parinte1, parinte2);
@@ -159,11 +136,9 @@ public class Main
             nouaPopulatie.sort((individ1, individ2) -> Double.compare(individ2.getFitness(), individ1.getFitness()));
             top_indivizi.add(nouaPopulatie.getFirst());
 
-            if(i%9==0)
-            {
+            if(i%9==0) {
                 //inlocuire ultimiii 20% din indivizi cu altii generati random
-                for(int k=0;k<NR_INDIVIZI/5;k++)
-                {
+                for(int k=0;k<NR_INDIVIZI/5;k++) {
                     Individ individ = new Individ();
                     individ.setIndivid(Individ.genereazaIndivid());
                     calculeazaFitness(individ);
@@ -173,24 +148,11 @@ public class Main
             populatie = nouaPopulatie;
         }
 
-        //afisare populatie finala
-//        for (Individ individ : populatie)
-//        {
-//            individ.afisareIndivid();
-//            System.out.println("Fitness: " + individ.getFitness());
-//        }
-
-        for(int i=0;i<100;i++)
-        {
-            System.out.println("Top Individ:"+i);
+        for(int i=0;i<NR_GENERATII;i++) {
+            System.out.println("\nTop Individ Generatia:"+i);
             top_indivizi.get(i).afisareIndivid();
-            System.out.println("Fitness: " + top_indivizi.get(i).getFitness());
+            System.out.println("Fitness Individ: " + top_indivizi.get(i).getFitness());
+            System.out.println("Medie fitness: "+fitnessuri.get(i));
         }
-
-//        for(int i=0;i<100;i++)
-//        {
-//            System.out.println("Generatia: "+i);
-//            System.out.println("Medie fitness: "+fitnessuri.get(i));
-//        }
     }
 }
